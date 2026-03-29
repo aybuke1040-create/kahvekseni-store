@@ -1,0 +1,256 @@
+// KAHVEKSENİ Prisma Schema
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  RETAIL
+  WHOLESALE
+  ADMIN
+}
+
+enum OrderType {
+  RETAIL
+  WHOLESALE
+}
+
+enum OrderStatus {
+  PENDING
+  PAYMENT_PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum LoyaltyTier {
+  BRONZE
+  SILVER
+  GOLD
+}
+
+enum PointTransactionType {
+  EARN
+  SPEND
+  EXPIRE
+  BONUS
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  phone         String?   @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          UserRole  @default(RETAIL)
+  isVerified    Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  companyName   String?
+  taxNumber     String?
+  address       Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  orders        Order[]
+  loyalty       LoyaltyAccount?
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  nameTR      String
+  nameEN      String
+  descriptionTR String?
+  descriptionEN String?
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id               String    @id @default(uuid())
+  slug             String    @unique
+  nameTR           String
+  nameEN           String
+  descriptionTR    String?
+  descriptionEN    String?
+  shortDescTR      String?
+  shortDescEN      String?
+  price            Decimal   @db.Decimal(10, 2)
+  wholesalePrice   Decimal   @db.Decimal(10, 2)
+  minWholesaleQty  Int       @default(10)
+  stock            Int       @default(0)
+  sku              String    @unique
+  imageUrls        String[]
+  isActive         Boolean   @default(true)
+  isFeatured       Boolean   @default(false)
+  origin           String?
+  roastLevel       String?
+  flavorNotes      String[]
+  categoryId       String
+  category         Category  @relation(fields: [categoryId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  variants         ProductVariant[]
+  orderItems       OrderItem[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id          String   @id @default(uuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  grindType   String?  // Whole Bean, Fine, Medium, Coarse
+  weight      Int?     // grams: 250, 500, 1000
+  price       Decimal  @db.Decimal(10, 2)
+  wholesalePrice Decimal @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  sku         String   @unique
+  isActive    Boolean  @default(true)
+
+  orderItems  OrderItem[]
+
+  @@map("product_variants")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     String      @unique
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  type            OrderType   @default(RETAIL)
+  status          OrderStatus @default(PENDING)
+  subtotal        Decimal     @db.Decimal(10, 2)
+  discountAmount  Decimal     @db.Decimal(10, 2) @default(0)
+  pointsUsed      Int         @default(0)
+  pointsEarned    Int         @default(0)
+  shippingCost    Decimal     @db.Decimal(10, 2) @default(0)
+  total           Decimal     @db.Decimal(10, 2)
+  shippingAddress Json
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  items           OrderItem[]
+  payment         Payment?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  variantId   String?
+  variant     ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  total       Decimal  @db.Decimal(10, 2)
+  productName String
+  variantInfo Json?
+
+  @@map("order_items")
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  orderId         String        @unique
+  order           Order         @relation(fields: [orderId], references: [id])
+  iyzicoToken     String?
+  iyzicoPaymentId String?
+  status          PaymentStatus @default(PENDING)
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("TRY")
+  paymentMethod   String?
+  errorMessage    String?
+  rawResponse     Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+model LoyaltyAccount {
+  id          String      @id @default(uuid())
+  userId      String      @unique
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points      Int         @default(0)
+  totalEarned Int         @default(0)
+  totalSpent  Int         @default(0)
+  tier        LoyaltyTier @default(BRONZE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  transactions PointTransaction[]
+
+  @@map("loyalty_accounts")
+}
+
+model PointTransaction {
+  id          String               @id @default(uuid())
+  loyaltyId   String
+  loyalty     LoyaltyAccount       @relation(fields: [loyaltyId], references: [id])
+  type        PointTransactionType
+  points      Int
+  description String
+  orderId     String?
+  createdAt   DateTime             @default(now())
+
+  @@map("point_transactions")
+}
+
+model B2BRequest {
+  id          String   @id @default(uuid())
+  companyName String
+  contactName String
+  email       String
+  phone       String
+  taxNumber   String?
+  city        String
+  message     String?
+  isReviewed  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("b2b_requests")
+}
