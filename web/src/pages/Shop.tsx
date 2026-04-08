@@ -36,8 +36,10 @@ export default function Shop() {
     const fetchCategories = async () => {
       try {
         const r = await api.get('/products/categories');
-        setCategories(r.data.data);
-      } catch {}
+        setCategories(Array.isArray(r.data?.data) ? r.data.data : []);
+      } catch {
+        setCategories([]);
+      }
     };
     fetchCategories();
   }, []);
@@ -51,10 +53,12 @@ export default function Shop() {
         if (category) params.set('category', category);
         params.set('page', String(page));
         const r = await api.get(`/products?${params}`);
-        setProducts(r.data.data);
-        setTotal(r.data.pagination.total);
+        const apiProducts = Array.isArray(r.data?.data) ? r.data.data : [];
+        setProducts(apiProducts);
+        setTotal(Number(r.data?.pagination?.total || 0));
       } catch {
         setProducts([]);
+        setTotal(0);
       } finally {
         setLoading(false);
       }
@@ -95,7 +99,7 @@ export default function Shop() {
               >
                 {t('shop.filter_all')}
               </button>
-              {categories.map((cat) => (
+              {Array.isArray(categories) && categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => { const s = new URLSearchParams(searchParams); s.set('category', cat.slug); setSearchParams(s); }}
@@ -123,7 +127,7 @@ export default function Shop() {
                 </div>
               ))}
             </div>
-          ) : products.length === 0 ? (
+          ) : !Array.isArray(products) || products.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-400 text-lg">{t('shop.no_results')}</p>
             </div>
