@@ -6,12 +6,12 @@ import { AuthRequest } from '../middlewares/auth.middleware';
 
 const signAccessToken = (id: string, email: string, role: string) =>
   jwt.sign({ id, email, role }, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '15m',
+    expiresIn: (process.env.JWT_EXPIRES_IN || '15m') as jwt.SignOptions['expiresIn'],
   });
 
 const signRefreshToken = (id: string) =>
   jwt.sign({ id }, process.env.JWT_REFRESH_SECRET!, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as jwt.SignOptions['expiresIn'],
   });
 
 export const register = async (req: Request, res: Response): Promise<void> => {

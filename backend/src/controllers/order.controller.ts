@@ -174,3 +174,46 @@ export const completeOrder = async (req: AuthRequest, res: Response): Promise<vo
     res.status(500).json({ success: false, message: 'Sipariş tamamlanamadı' });
   }
 };
+
+export const getAllOrdersAdmin = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        user: { select: { id: true, email: true, firstName: true, lastName: true } },
+        items: { include: { product: { select: { nameTR: true } } } },
+        payment: { select: { status: true, paymentMethod: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+    res.json({ success: true, data: orders });
+  } catch {
+    res.status(500).json({ success: false, message: 'Siparişler alınamadı' });
+  }
+};
+
+export const updateOrderStatusAdmin = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body as { status: string };
+
+    const existing = await prisma.order.findUnique({ where: { id } });
+    if (!existing) {
+      res.status(404).json({ success: false, message: 'Sipariş bulunamadı' });
+      return;
+    }
+
+    const updated = await prisma.order.update({
+      where: { id },
+      data: { status: status as never },
+      include: {
+        user: { select: { id: true, email: true, firstName: true, lastName: true } },
+        payment: { select: { status: true, paymentMethod: true } },
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch {
+    res.status(500).json({ success: false, message: 'Sipariş durumu güncellenemedi' });
+  }
+};

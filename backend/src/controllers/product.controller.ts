@@ -137,6 +137,8 @@ function formatProduct(p: Record<string, unknown>, lang: string) {
   return {
     id: p.id,
     slug: p.slug,
+    nameTR: p.nameTR,
+    nameEN: p.nameEN,
     name: lang === 'en' ? p.nameEN : p.nameTR,
     description: lang === 'en' ? p.descriptionEN : p.descriptionTR,
     shortDesc: lang === 'en' ? p.shortDescEN : p.shortDescTR,

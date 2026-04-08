@@ -44,6 +44,10 @@ export interface CheckoutFormRequest {
 
 export const createCheckoutForm = (data: CheckoutFormRequest): Promise<Record<string, unknown>> => {
   return new Promise((resolve, reject) => {
+    const callbackUrl =
+      process.env.PAYMENT_CALLBACK_URL ||
+      `${process.env.WEB_URL}/api/payment/callback`;
+
     const request = {
       locale: Iyzipay.LOCALE.TR,
       conversationId: data.orderId,
@@ -52,7 +56,7 @@ export const createCheckoutForm = (data: CheckoutFormRequest): Promise<Record<st
       currency: Iyzipay.CURRENCY.TRY,
       basketId: data.orderId,
       paymentGroup: Iyzipay.PAYMENT_GROUP.PRODUCT,
-      callbackUrl: `${process.env.WEB_URL}/payment/callback`,
+      callbackUrl,
       enabledInstallments: [1, 2, 3, 6],
       buyer: data.buyer,
       shippingAddress: data.shippingAddress,

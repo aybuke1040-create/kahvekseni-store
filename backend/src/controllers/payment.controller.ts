@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../utils/prisma';
 import { createCheckoutForm, retrieveCheckoutForm } from '../services/iyzico.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
@@ -106,7 +107,7 @@ export const paymentCallback = async (req: Request, res: Response): Promise<void
             status: 'SUCCESS',
             iyzicoPaymentId: (result as Record<string, unknown>).paymentId as string,
             paymentMethod: (result as Record<string, unknown>).paymentChannel as string,
-            rawResponse: result as Record<string, unknown>,
+            rawResponse: result as Prisma.InputJsonValue,
           },
         }),
         prisma.order.update({
@@ -143,7 +144,7 @@ export const paymentCallback = async (req: Request, res: Response): Promise<void
     } else {
       await prisma.payment.update({
         where: { id: payment.id },
-        data: { status: 'FAILED', rawResponse: result as Record<string, unknown> },
+        data: { status: 'FAILED', rawResponse: result as Prisma.InputJsonValue },
       });
       res.redirect(`${process.env.WEB_URL}/payment/failed?orderId=${payment.orderId}`);
     }
