@@ -1,0 +1,163 @@
+{
+    "products": [
+      {
+        "nameTR": "Brezilya Cerrado",
+        "nameEN": "Brazil Cerrado",
+        "slug": "brezilya-cerrado",
+        "descriptionTR": "Tatlı ve kremsi yapısıyla günlük içime uygun Brezilya kahvesi.",
+        "descriptionEN": "A sweet, creamy Brazilian coffee suitable for everyday drinking.",
+        "shortDesc": "Tatlı & Kremsi",
+        "category": "Yöresel Filtre Kahveler",
+        "origin": "Brezilya",
+        "roastLevel": "Orta-Koyu",
+        "flavorNotes": ["Fındık", "Karamel", "Vanilya"],
+        "imageUrls": [],
+        "isFeatured": true,
+        "sortOrder": 1,
+        "variants": [
+          { "grindType": "Bütün Çekirdek", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-BRZ-001-250G-BUT" },
+          { "grindType": "Kaba Öğütme", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-BRZ-001-250G-KAB" },
+          { "grindType": "Orta Öğütme", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-BRZ-001-250G-ORT" },
+          { "grindType": "İnce Öğütme", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-BRZ-001-250G-INC" }
+        ]
+      },
+      {
+        "nameTR": "İstanbul Harmanı",
+        "nameEN": "Istanbul Blend",
+        "slug": "istanbul-harmani",
+        "descriptionTR": "KAHVEKSENİ imzalı özel harman. Brezilya ve Kolombiya çekirdeklerinin dengeli uyumu.",
+        "descriptionEN": "A signature KAHVEKSENİ blend with a balanced harmony of Brazilian and Colombian beans.",
+        "shortDesc": "Güçlü & Dengeli",
+        "category": "Yöresel Filtre Kahveler",
+        "origin": "Brezilya & Kolombiya",
+        "roastLevel": "Koyu",
+        "flavorNotes": ["Bitter Çikolata", "Karamel", "Fındık"],
+        "imageUrls": [],
+        "isFeatured": true,
+        "sortOrder": 2,
+        "variants": [
+          { "grindType": "Bütün Çekirdek", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-IST-001-250G-BUT" },
+          { "grindType": "Kaba Öğütme", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-IST-001-250G-KAB" },
+          { "grindType": "Orta Öğütme", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-IST-001-250G-ORT" },
+          { "grindType": "İnce Öğütme", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-IST-001-250G-INC" }
+        ]
+      },
+      {
+        "nameTR": "Espresso",
+        "nameEN": "Espresso",
+        "slug": "espresso",
+        "descriptionTR": "Yoğun ve aromatik espresso profili.",
+        "descriptionEN": "An intense and aromatic espresso profile.",
+        "shortDesc": "Yoğun & Aromatik",
+        "category": "Yöresel Filtre Kahveler",
+        "origin": "Blend",
+        "roastLevel": "Koyu",
+        "flavorNotes": ["Kakao", "Kavrulmuş Fındık"],
+        "imageUrls": [],
+        "isFeatured": false,
+        "sortOrder": 3,
+        "variants": [
+          { "grindType": "Bütün Çekirdek", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-ESP-001-250G-BUT" },
+          { "grindType": "Kaba Öğütme", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-ESP-001-250G-KAB" },
+          { "grindType": "Orta Öğütme", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-ESP-001-250G-ORT" },
+          { "grindType": "İnce Öğütme", "weight": 250, "price": 139.9, "wholesalePrice": 104, "stock": 50, "sku": "KKS-ESP-001-250G-INC" }
+        ]
+      },
+      {
+        "nameTR": "Türk Kahvesi",
+        "nameEN": "Turkish Coffee",
+        "slug": "turk-kahvesi",
+        "descriptionTR": "Geleneksel içim için özenle kavrulmuş klasik Türk kahvesi.",
+        "descriptionEN": "Classic Turkish coffee roasted for a traditional drinking experience.",
+        "shortDesc": "Geleneksel & Yoğun",
+        "category": "Yöresel Türk Kahveleri",
+        "origin": "Blend",
+        "roastLevel": "Orta",
+        "flavorNotes": ["Kakao", "Baharat"],
+        "imageUrls": [],
+        "isFeatured": true,
+        "sortOrder": 10,
+        "variants": [
+          { "grindType": "Türk Kahvesi Öğütüm", "weight": 100, "price": 89.9, "wholesalePrice": 67, "stock": 50, "sku": "KKS-TURK-001-100G" }
+        ]
+      },
+      {
+        "nameTR": "Damla Sakızlı Türk Kahvesi",
+        "nameEN": "Mastic Turkish Coffee",
+        "slug": "damla-sakizli-turk-kahvesi",
+        "descriptionTR": "Damla sakızı aromasıyla zenginleştirilmiş özel Türk kahvesi.",
+        "descriptionEN": "Special Turkish coffee enriched with mastic aroma.",
+        "shortDesc": "Aromatik & Özel",
+        "category": "Yöresel Türk Kahveleri",
+        "origin": "Blend",
+        "roastLevel": "Orta",
+        "flavorNotes": ["Damla Sakızı"],
+        "imageUrls": [],
+        "isFeatured": false,
+        "sortOrder": 11,
+        "variants": [
+          { "grindType": "Türk Kahvesi Öğütüm", "weight": 100, "price": 94.9, "wholesalePrice": 71, "stock": 50, "sku": "KKS-DSK-001-100G" }
+        ]
+      },
+      {
+        "nameTR": "Dibek Kahvesi",
+        "nameEN": "Dibek Coffee",
+        "slug": "dibek-kahvesi",
+        "descriptionTR": "Yumuşak içimli geleneksel dibek kahvesi.",
+        "descriptionEN": "A smooth traditional dibek coffee.",
+        "shortDesc": "Yumuşak & Geleneksel",
+        "category": "Yöresel Türk Kahveleri",
+        "origin": "Blend",
+        "roastLevel": "Açık-Orta",
+        "flavorNotes": ["Krema", "Yumuşak Baharat"],
+        "imageUrls": [],
+        "isFeatured": false,
+        "sortOrder": 12,
+        "variants": [
+          { "grindType": "Türk Kahvesi Öğütüm", "weight": 100, "price": 94.9, "wholesalePrice": 71, "stock": 50, "sku": "KKS-DBK-001-100G" }
+        ]
+      },
+      {
+        "nameTR": "Kolombiya",
+        "nameEN": "Colombia",
+        "slug": "colombia",
+        "descriptionTR": "Canlı asidite ve dengeli gövdeye sahip Kolombiya kahvesi.",
+        "descriptionEN": "Colombian coffee with lively acidity and balanced body.",
+        "shortDesc": "Canlı & Dengeli",
+        "category": "Yöresel Filtre Kahveler",
+        "origin": "Kolombiya",
+        "roastLevel": "Orta",
+        "flavorNotes": ["Narenciye", "Karamel", "Kırmızı Meyve"],
+        "imageUrls": [],
+        "isFeatured": true,
+        "sortOrder": 20,
+        "variants": [
+          { "grindType": "Bütün Çekirdek", "weight": 250, "price": 144.9, "wholesalePrice": 108, "stock": 50, "sku": "KKS-COL-001-250G-BUT" },
+          { "grindType": "Kaba Öğütme", "weight": 250, "price": 144.9, "wholesalePrice": 108, "stock": 50, "sku": "KKS-COL-001-250G-KAB" },
+          { "grindType": "Orta Öğütme", "weight": 250, "price": 144.9, "wholesalePrice": 108, "stock": 50, "sku": "KKS-COL-001-250G-ORT" },
+          { "grindType": "İnce Öğütme", "weight": 250, "price": 144.9, "wholesalePrice": 108, "stock": 50, "sku": "KKS-COL-001-250G-INC" }
+        ]
+      },
+      {
+        "nameTR": "Vanilyalı Filtre Kahve",
+        "nameEN": "Vanilla Filter Coffee",
+        "slug": "vanilyali-filtre-kahve",
+        "descriptionTR": "Vanilya aromalı yumuşak içimli filtre kahve.",
+        "descriptionEN": "Smooth filter coffee with vanilla aroma.",
+        "shortDesc": "Vanilyalı & Yumuşak",
+        "category": "Aromalı Filtre Kahveler",
+        "origin": "Blend",
+        "roastLevel": "Orta",
+        "flavorNotes": ["Vanilya", "Karamel"],
+        "imageUrls": [],
+        "isFeatured": false,
+        "sortOrder": 30,
+        "variants": [
+          { "grindType": "Bütün Çekirdek", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-VAN-001-250G-BUT" },
+          { "grindType": "Kaba Öğütme", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-VAN-001-250G-KAB" },
+          { "grindType": "Orta Öğütme", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-VAN-001-250G-ORT" },
+          { "grindType": "İnce Öğütme", "weight": 250, "price": 149.9, "wholesalePrice": 112, "stock": 50, "sku": "KKS-VAN-001-250G-INC" }
+        ]
+      }
+    ]
+  }
