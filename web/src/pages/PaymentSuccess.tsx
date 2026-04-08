@@ -1,8 +1,51 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import api from '../lib/api';
 
 export default function PaymentSuccess() {
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const orderId = params.get('orderId');
+  const [verifying, setVerifying] = useState(true);
+  const [isValidSuccess, setIsValidSuccess] = useState(false);
+
+  useEffect(() => {
+    const verify = async () => {
+      if (!orderId) {
+        navigate('/payment/failed', { replace: true });
+        return;
+      }
+
+      try {
+        const res = await api.get(`/orders/${orderId}`);
+        const status = res.data?.data?.status;
+        const allowed = ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+        if (allowed.includes(status)) {
+          setIsValidSuccess(true);
+        } else {
+          navigate(`/payment/failed?orderId=${orderId}`, { replace: true });
+          return;
+        }
+      } catch {
+        navigate(`/payment/failed?orderId=${orderId}`, { replace: true });
+        return;
+      } finally {
+        setVerifying(false);
+      }
+    };
+
+    verify();
+  }, [orderId, navigate]);
+
+  if (verifying) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center text-gray-500">Odeme durumu dogrulaniyor...</div>
+      </div>
+    );
+  }
+
+  if (!isValidSuccess) return null;
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">

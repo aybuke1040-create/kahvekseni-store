@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
+import Admin from './pages/Admin';
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="register" element={<Register />} />
           <Route path="payment/success" element={<PaymentSuccess />} />
           <Route path="payment/failed" element={<PaymentFailed />} />
+          <Route path="admin" element={<Admin />} />
         </Route>
       </Routes>
     </BrowserRouter>

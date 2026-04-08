@@ -75,6 +75,9 @@ export default function Navbar() {
                 <div className="absolute right-0 top-full mt-1 bg-white text-brand-brown rounded-lg shadow-lg py-2 min-w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                   <Link to="/account" className="block px-4 py-2 hover:bg-brand-cream text-sm">{t('nav.account')}</Link>
                   <Link to="/loyalty" className="block px-4 py-2 hover:bg-brand-cream text-sm">{t('nav.loyalty')}</Link>
+                  {user?.role === 'ADMIN' && (
+                    <Link to="/admin" className="block px-4 py-2 hover:bg-brand-cream text-sm">Admin Panel</Link>
+                  )}
                   <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-brand-cream text-sm text-red-600">
                     {t('nav.logout')}
                   </button>
@@ -106,6 +109,9 @@ export default function Navbar() {
             <Link to="/shop" onClick={() => setMenuOpen(false)} className="hover:text-brand-gold">{t('nav.shop')}</Link>
             <Link to="/b2b" onClick={() => setMenuOpen(false)} className="hover:text-brand-gold">{t('nav.b2b')}</Link>
             <Link to="/loyalty" onClick={() => setMenuOpen(false)} className="hover:text-brand-gold">{t('nav.loyalty')}</Link>
+            {user?.role === 'ADMIN' && (
+              <Link to="/admin" onClick={() => setMenuOpen(false)} className="hover:text-brand-gold">Admin Panel</Link>
+            )}
             {!isAuthenticated && (
               <Link to="/login" onClick={() => setMenuOpen(false)} className="hover:text-brand-gold">{t('nav.login')}</Link>
             )}

@@ -9,7 +9,7 @@ import { useAuthStore } from '../store/authStore';
 export default function Checkout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { items, total, clearCart } = useCartStore();
+  const { items, total } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -50,10 +50,7 @@ export default function Checkout() {
         document.write(payRes.data.data.checkoutFormContent);
         document.close();
       } else {
-        // Sandbox fallback
-        clearCart();
-        toast.success('Siparişiniz oluşturuldu!');
-        navigate('/account');
+        toast.error('Ödeme formu alınamadı. Lütfen tekrar deneyin.');
       }
     } catch (err) {
       toast.error('Sipariş oluşturulurken hata oluştu');
