@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
+import { apiDataArray, safeArray } from '../lib/api-helpers';
 import { useAuthStore } from '../store/authStore';
 
 interface Order {
@@ -33,11 +34,14 @@ export default function Account() {
   useEffect(() => {
     if (!isAuthenticated) { navigate('/login'); return; }
     api.get('/orders')
-      .then(r => setOrders(r.data.data))
+      .then(r => setOrders(apiDataArray<Order>(r)))
+      .catch(() => setOrders([]))
       .finally(() => setLoading(false));
   }, [isAuthenticated, navigate]);
 
   if (!isAuthenticated) return null;
+
+  const safeOrders = safeArray<Order>(orders);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -67,13 +71,13 @@ export default function Account() {
           <h2 className="text-2xl font-bold text-brand-brown mb-6">Siparişlerim</h2>
           {loading ? (
             <div className="text-center py-10"><div className="inline-block w-8 h-8 border-4 border-brand-gold border-t-transparent rounded-full animate-spin" /></div>
-          ) : orders.length === 0 ? (
+          ) : safeOrders.length === 0 ? (
             <div className="card p-10 text-center">
               <p className="text-gray-400">Henüz siparişiniz yok</p>
             </div>
           ) : (
             <div className="space-y-4">
-              {orders.map((order) => (
+              {safeOrders.map((order) => (
                 <div key={order.id} className="card p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div>
@@ -88,7 +92,7 @@ export default function Account() {
                     </div>
                   </div>
                   <div className="text-sm text-gray-500">
-                    {order.items?.map((item) => (
+                    {safeArray<{ productName: string; quantity: number }>(order.items).map((item) => (
                       <span key={item.productName}>{item.productName} x{item.quantity} </span>
                     ))}
                   </div>

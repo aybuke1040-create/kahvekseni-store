@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useCartStore } from '../store/cartStore';
+import { CartItem, useCartStore } from '../store/cartStore';
+import { safeArray } from '../lib/api-helpers';
 
 export default function Cart() {
   const { t } = useTranslation();
   const { items, removeItem, updateQuantity, total } = useCartStore();
+  const safeItems = safeArray<CartItem>(items);
 
   const shipping = total >= 500 ? 0 : 29.99;
   const grandTotal = total + shipping;
 
-  if (items.length === 0) {
+  if (safeItems.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
         <div className="text-6xl mb-4">🛒</div>
@@ -27,7 +29,7 @@ export default function Cart() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart items */}
         <div className="lg:col-span-2 space-y-4">
-          {items.map((item) => (
+          {safeItems.map((item) => (
             <div key={item.id} className="card p-4 flex gap-4">
               <img
                 src={item.imageUrl || 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=100'}

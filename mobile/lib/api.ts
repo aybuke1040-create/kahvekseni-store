@@ -24,9 +24,11 @@ api.interceptors.response.use(
         error.config._retry = true;
         try {
           const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
-          await AsyncStorage.setItem('accessToken', data.data.accessToken);
-          await AsyncStorage.setItem('refreshToken', data.data.refreshToken);
-          error.config.headers.Authorization = `Bearer ${data.data.accessToken}`;
+          const tokens = data?.data;
+          if (!tokens?.accessToken || !tokens?.refreshToken) throw new Error('Invalid refresh response');
+          await AsyncStorage.setItem('accessToken', tokens.accessToken);
+          await AsyncStorage.setItem('refreshToken', tokens.refreshToken);
+          error.config.headers.Authorization = `Bearer ${tokens.accessToken}`;
           return api(error.config);
         } catch {
           await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);

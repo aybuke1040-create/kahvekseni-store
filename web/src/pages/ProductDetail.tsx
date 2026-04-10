@@ -5,6 +5,7 @@ import api from '../lib/api';
 import { useCartStore } from '../store/cartStore';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { apiData, firstImage, safeArray } from '../lib/api-helpers';
 
 interface Variant {
   id: string;
@@ -44,8 +45,10 @@ export default function ProductDetail() {
     if (!slug) return;
     api.get(`/products/${slug}`)
       .then(r => {
-        setProduct(r.data.data);
-        if (r.data.data.variants?.length) setSelectedVariant(r.data.data.variants[0]);
+        const apiProduct = apiData<Product>(r);
+        setProduct(apiProduct);
+        const variants = safeArray<Variant>(apiProduct?.variants);
+        if (variants.length) setSelectedVariant(variants[0]);
       })
       .catch(() => setProduct(null))
       .finally(() => setLoading(false));
@@ -63,9 +66,12 @@ export default function ProductDetail() {
     </div>
   );
 
-  const currentPrice = selectedVariant?.price || product.price;
-  const grindTypes = [...new Set(product.variants.map(v => v.grindType))];
-  const weights = [...new Set(product.variants.map(v => v.weight))].sort((a, b) => a - b);
+  const variants = safeArray<Variant>(product.variants);
+  const imageUrls = safeArray<string>(product.imageUrls);
+  const flavorNotes = safeArray<string>(product.flavorNotes);
+  const currentPrice = Number(selectedVariant?.price || product.price || 0);
+  const grindTypes = [...new Set(variants.map(v => v.grindType).filter(Boolean))];
+  const weights = [...new Set(variants.map(v => v.weight).filter((weight): weight is number => typeof weight === 'number'))].sort((a, b) => a - b);
 
   const handleAddToCart = () => {
     addItem({
@@ -74,7 +80,7 @@ export default function ProductDetail() {
       variantId: selectedVariant?.id,
       name: product.name,
       price: currentPrice,
-      imageUrl: product.imageUrls[0] || '',
+      imageUrl: firstImage(imageUrls),
       quantity,
       grindType: selectedVariant?.grindType,
       weight: selectedVariant?.weight,
@@ -89,14 +95,14 @@ export default function ProductDetail() {
         <div>
           <div className="aspect-square rounded-2xl overflow-hidden mb-4">
             <img
-              src={product.imageUrls[selectedImage] || 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600'}
+              src={imageUrls[selectedImage] || firstImage(imageUrls)}
               alt={product.name}
               className="w-full h-full object-cover"
             />
           </div>
-          {product.imageUrls.length > 1 && (
+          {imageUrls.length > 1 && (
             <div className="flex gap-3">
-              {product.imageUrls.map((url, i) => (
+              {imageUrls.map((url, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
@@ -129,11 +135,11 @@ export default function ProductDetail() {
             )}
           </div>
 
-          {product.flavorNotes?.length > 0 && (
+          {flavorNotes.length > 0 && (
             <div className="mb-4">
               <p className="text-sm text-gray-400 mb-2">{t('product.flavor_notes')}</p>
               <div className="flex flex-wrap gap-2">
-                {product.flavorNotes.map((note) => (
+                {flavorNotes.map((note) => (
                   <span key={note} className="bg-brand-cream text-brand-brown px-3 py-1 rounded-full text-sm font-medium">
                     {note}
                   </span>
@@ -150,7 +156,7 @@ export default function ProductDetail() {
               <p className="text-sm font-semibold mb-2">{t('product.weight')}</p>
               <div className="flex gap-2 flex-wrap">
                 {weights.map((w) => {
-                  const variant = product.variants.find(
+                  const variant = variants.find(
                     v => v.weight === w && (selectedVariant ? v.grindType === selectedVariant.grindType : true)
                   );
                   return (
@@ -172,7 +178,7 @@ export default function ProductDetail() {
               <p className="text-sm font-semibold mb-2">{t('product.grind_type')}</p>
               <div className="flex gap-2 flex-wrap">
                 {grindTypes.map((grind) => {
-                  const variant = product.variants.find(
+                  const variant = variants.find(
                     v => v.grindType === grind && (selectedVariant ? v.weight === selectedVariant.weight : true)
                   );
                   return (
