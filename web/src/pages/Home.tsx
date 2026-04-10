@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
+import { apiDataArray, safeArray } from '../lib/api-helpers';
 import ProductCard from '../components/product/ProductCard';
 
 interface Product {
@@ -31,15 +32,18 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    api.get('/products?featured=true&limit=3').then(r => setFeatured(r.data.data)).catch(() => {
+    api.get('/products?featured=true&limit=3').then(r => setFeatured(apiDataArray<Product>(r))).catch(() => {
       setFeatured([
         { id: '1', slug: 'demo', name: 'Etiyopya Yirgacheffe', shortDesc: 'Çiçeksi & Narenciye', price: 189.90, imageUrls: ['https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=400'], isFeatured: true, origin: 'Etiyopya', roastLevel: 'Açık', flavorNotes: ['Çiçek', 'Limon'], stock: 50 },
         { id: '2', slug: 'demo2', name: 'Kolombiya Huila', shortDesc: 'Karamel & Şeftali', price: 169.90, imageUrls: ['https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=400'], isFeatured: true, origin: 'Kolombiya', roastLevel: 'Orta', flavorNotes: ['Karamel', 'Şeftali'], stock: 80 },
         { id: '3', slug: 'demo3', name: 'İstanbul Harmanı', shortDesc: 'Güçlü & Dengeli', price: 149.90, imageUrls: ['https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400'], isFeatured: true, origin: 'Brezilya & Kolombiya', roastLevel: 'Koyu', flavorNotes: ['Çikolata', 'Karamel'], stock: 200 },
       ]);
     });
-    api.get('/products/categories').then(r => setCategories(r.data.data)).catch(() => {});
+    api.get('/products/categories').then(r => setCategories(apiDataArray<Category>(r))).catch(() => setCategories([]));
   }, []);
+
+  const safeCategories = safeArray<Category>(categories);
+  const safeFeatured = safeArray<Product>(featured);
 
   return (
     <div>
@@ -85,11 +89,11 @@ export default function Home() {
       </section>
 
       {/* Categories */}
-      {categories.length > 0 && (
+      {safeCategories.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h2 className="text-3xl font-bold text-brand-brown mb-8 text-center">{t('home.categories_title')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.map((cat) => (
+            {safeCategories.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/shop?category=${cat.slug}`}
@@ -112,7 +116,7 @@ export default function Home() {
           <p className="text-gray-500">{t('home.featured_subtitle')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featured.map((product) => (
+          {safeFeatured.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

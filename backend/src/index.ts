@@ -19,16 +19,25 @@ import { logger } from './utils/logger';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [
+  process.env.WEB_URL,
+  ...(process.env.CORS_ORIGINS || '').split(','),
+  'http://localhost:3000',
+  'http://localhost:8081',
+].map((origin) => origin?.trim().replace(/\/+$/, '')).filter(Boolean);
 
 // Security & middleware
 app.use(helmet());
 app.use(compression());
 app.use(morgan('combined'));
 app.use(cors({
-  origin: [
-    process.env.WEB_URL || 'http://localhost:3000',
-    'http://localhost:8081', // Expo
-  ],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/+$/, ''))) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 

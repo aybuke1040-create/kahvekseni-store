@@ -12,4 +12,4 @@ export const Colors = {
   success: '#22C55E',
 };
 
-export const API_URL = 'http://localhost:5000/api';
+export const API_URL = (process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/+$/, '');

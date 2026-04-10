@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
+import { apiDataArray, safeArray } from '../lib/api-helpers';
 import { useAuthStore } from '../store/authStore';
 
 type AdminTab = 'products' | 'orders';
@@ -93,10 +94,13 @@ export default function Admin() {
         api.get('/products/categories'),
         api.get('/orders/admin'),
       ]);
-      setProducts(productsRes.data.data || []);
-      setCategories(categoriesRes.data.data || []);
-      setOrders(ordersRes.data.data || []);
+      setProducts(apiDataArray<Product>(productsRes));
+      setCategories(apiDataArray<Category>(categoriesRes));
+      setOrders(apiDataArray<Order>(ordersRes));
     } catch {
+      setProducts([]);
+      setCategories([]);
+      setOrders([]);
       toast.error('Admin verileri alınamadı');
     } finally {
       setLoading(false);
@@ -159,7 +163,7 @@ export default function Admin() {
       stock: String(p.stock ?? 0),
       sku: p.sku || '',
       categoryId: p.category?.id || '',
-      imageUrls: (p.imageUrls || []).join(', '),
+      imageUrls: safeArray<string>(p.imageUrls).join(', '),
     });
     setTab('products');
   };
@@ -168,7 +172,7 @@ export default function Admin() {
     try {
       await api.patch(`/orders/${orderId}/status`, { status });
       toast.success('Sipariş durumu güncellendi');
-      setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
+      setOrders((prev) => safeArray<Order>(prev).map((o) => (o.id === orderId ? { ...o, status } : o)));
     } catch {
       toast.error('Sipariş durumu güncellenemedi');
     }
@@ -201,7 +205,7 @@ export default function Admin() {
             <input className="input-field" placeholder="SKU" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} required />
             <select className="input-field" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} required>
               <option value="">Kategori seç</option>
-              {categories.map((c) => (
+              {safeArray<Category>(categories).map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
@@ -225,7 +229,7 @@ export default function Admin() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((p) => (
+                {safeArray<Product>(products).map((p) => (
                   <tr key={p.id} className="border-b">
                     <td className="py-2">{p.name}</td>
                     <td className="py-2">{p.sku}</td>
@@ -254,7 +258,7 @@ export default function Admin() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((o) => (
+              {safeArray<Order>(orders).map((o) => (
                 <tr key={o.id} className="border-b">
                   <td className="py-2">{o.orderNumber}</td>
                   <td className="py-2">{o.user?.firstName} {o.user?.lastName}<br /><span className="text-gray-400">{o.user?.email}</span></td>

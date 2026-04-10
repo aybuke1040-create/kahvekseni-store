@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useCartStore } from '../../store/cartStore';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { firstImage, safeArray } from '../../lib/api-helpers';
 
 interface Product {
   id: string;
@@ -25,6 +26,8 @@ interface Props {
 export default function ProductCard({ product }: Props) {
   const { t } = useTranslation();
   const addItem = useCartStore((s) => s.addItem);
+  const imageUrl = firstImage(product?.imageUrls);
+  const flavorNotes = safeArray<string>(product?.flavorNotes);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -32,8 +35,8 @@ export default function ProductCard({ product }: Props) {
       id: uuidv4(),
       productId: product.id,
       name: product.name,
-      price: product.price,
-      imageUrl: product.imageUrls[0] || '',
+      price: Number(product.price || 0),
+      imageUrl,
       quantity: 1,
     });
     toast.success(`${product.name} sepete eklendi`);
@@ -43,7 +46,7 @@ export default function ProductCard({ product }: Props) {
     <Link to={`/shop/${product.slug}`} className="card group block">
       <div className="relative overflow-hidden aspect-square">
         <img
-          src={product.imageUrls[0] || 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400'}
+          src={imageUrl}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -69,9 +72,9 @@ export default function ProductCard({ product }: Props) {
         )}
 
         {/* Flavor notes */}
-        {product.flavorNotes?.length > 0 && (
+        {flavorNotes.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
-            {product.flavorNotes.slice(0, 3).map((note) => (
+            {flavorNotes.slice(0, 3).map((note) => (
               <span key={note} className="text-xs bg-brand-cream px-2 py-0.5 rounded-full text-brand-brown-light">
                 {note}
               </span>
@@ -81,7 +84,7 @@ export default function ProductCard({ product }: Props) {
 
         <div className="flex items-center justify-between">
           <span className="text-xl font-bold text-brand-brown">
-            {product.price.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {t('common.tl')}
+            {Number(product.price || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {t('common.tl')}
           </span>
           <button
             onClick={handleAddToCart}

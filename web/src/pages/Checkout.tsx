@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
-import { useCartStore } from '../store/cartStore';
+import { apiData, safeArray } from '../lib/api-helpers';
+import { CartItem, useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 
 export default function Checkout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { items, total } = useCartStore();
+  const safeItems = safeArray<CartItem>(items);
   const { isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -31,11 +33,11 @@ export default function Checkout() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (items.length === 0) { toast.error('Sepetiniz boş'); return; }
+    if (safeItems.length === 0) { toast.error('Sepetiniz boş'); return; }
     setLoading(true);
     try {
       const orderRes = await api.post('/orders', {
-        items: items.map(i => ({
+        items: safeItems.map(i => ({
           productId: i.productId,
           variantId: i.variantId,
           quantity: i.quantity,
@@ -43,11 +45,13 @@ export default function Checkout() {
         shippingAddress: form,
       });
 
-      const payRes = await api.post('/payment/init', { orderId: orderRes.data.data.id });
-      if (payRes.data.data?.checkoutFormContent) {
+      const order = apiData<{ id?: string }>(orderRes);
+      const payRes = await api.post('/payment/init', { orderId: order?.id });
+      const payment = apiData<{ checkoutFormContent?: string }>(payRes);
+      if (payment?.checkoutFormContent) {
         // Open İyzico form in modal/redirect
         document.open();
-        document.write(payRes.data.data.checkoutFormContent);
+        document.write(payment.checkoutFormContent);
         document.close();
       } else {
         toast.error('Ödeme formu alınamadı. Lütfen tekrar deneyin.');
@@ -112,7 +116,7 @@ export default function Checkout() {
         <div className="card p-6 h-fit">
           <h2 className="text-xl font-semibold text-brand-brown mb-4">{t('checkout.order_summary')}</h2>
           <div className="space-y-3 text-sm mb-4">
-            {items.map((item) => (
+            {safeItems.map((item) => (
               <div key={item.id} className="flex justify-between">
                 <span className="text-gray-600 truncate pr-2">{item.name} x{item.quantity}</span>
                 <span className="font-medium shrink-0">{(item.price * item.quantity).toFixed(2)} TL</span>

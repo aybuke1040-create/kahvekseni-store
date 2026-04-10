@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
+import { apiDataArray, safeArray } from '../lib/api-helpers';
 import ProductCard from '../components/product/ProductCard';
 
 interface Product {
@@ -36,7 +37,7 @@ export default function Shop() {
     const fetchCategories = async () => {
       try {
         const r = await api.get('/products/categories');
-        setCategories(Array.isArray(r.data?.data) ? r.data.data : []);
+        setCategories(apiDataArray<Category>(r));
       } catch {
         setCategories([]);
       }
@@ -53,7 +54,7 @@ export default function Shop() {
         if (category) params.set('category', category);
         params.set('page', String(page));
         const r = await api.get(`/products?${params}`);
-        const apiProducts = Array.isArray(r.data?.data) ? r.data.data : [];
+        const apiProducts = apiDataArray<Product>(r);
         setProducts(apiProducts);
         setTotal(Number(r.data?.pagination?.total || 0));
       } catch {
@@ -65,6 +66,9 @@ export default function Shop() {
     };
     fetchProducts();
   }, [search, category, page]);
+
+  const safeCategories = safeArray<Category>(categories);
+  const safeProducts = safeArray<Product>(products);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -99,7 +103,7 @@ export default function Shop() {
               >
                 {t('shop.filter_all')}
               </button>
-              {Array.isArray(categories) && categories.map((cat) => (
+              {safeCategories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => { const s = new URLSearchParams(searchParams); s.set('category', cat.slug); setSearchParams(s); }}
@@ -127,7 +131,7 @@ export default function Shop() {
                 </div>
               ))}
             </div>
-          ) : !Array.isArray(products) || products.length === 0 ? (
+          ) : safeProducts.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-400 text-lg">{t('shop.no_results')}</p>
             </div>
@@ -135,7 +139,7 @@ export default function Shop() {
             <>
               <p className="text-sm text-gray-500 mb-4">{total} ürün bulundu</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
+                {safeProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../lib/api';
+import { apiData, safeArray } from '../lib/api-helpers';
 import { useAuthStore } from '../store/authStore';
 
 interface Loyalty {
@@ -17,6 +18,8 @@ interface Loyalty {
     createdAt: string;
   }>;
 }
+
+type LoyaltyTransaction = Loyalty['transactions'][number];
 
 const tierColors: Record<string, string> = {
   BRONZE: 'bg-amber-700',
@@ -40,7 +43,11 @@ export default function Loyalty() {
   useEffect(() => {
     if (!isAuthenticated) { navigate('/login'); return; }
     api.get('/loyalty')
-      .then(r => setLoyalty(r.data.data))
+      .then(r => {
+        const apiLoyalty = apiData<Loyalty>(r);
+        setLoyalty(apiLoyalty ? { ...apiLoyalty, transactions: safeArray(apiLoyalty.transactions) } : null);
+      })
+      .catch(() => setLoyalty(null))
       .finally(() => setLoading(false));
   }, [isAuthenticated, navigate]);
 
@@ -54,6 +61,7 @@ export default function Loyalty() {
 
   const currentTierData = tiers.find(t => t.name === loyalty?.tier);
   const nextTier = tiers[tiers.findIndex(t => t.name === loyalty?.tier) + 1];
+  const transactions = safeArray<LoyaltyTransaction>(loyalty?.transactions);
   const progress = nextTier && loyalty
     ? Math.min(100, ((loyalty.totalEarned - (currentTierData?.min || 0)) / ((nextTier.min) - (currentTierData?.min || 0))) * 100)
     : 100;
@@ -139,13 +147,13 @@ export default function Loyalty() {
       </div>
 
       {/* Transaction history */}
-      {loyalty?.transactions && loyalty.transactions.length > 0 && (
+      {transactions.length > 0 && (
         <div className="card overflow-hidden">
           <div className="p-6 border-b">
             <h2 className="text-xl font-bold text-brand-brown">{t('loyalty.history')}</h2>
           </div>
           <div className="divide-y">
-            {loyalty.transactions.map((tx) => (
+            {transactions.map((tx) => (
               <div key={tx.id} className="flex items-center justify-between px-6 py-4">
                 <div>
                   <p className="font-medium text-brand-brown">{tx.description}</p>

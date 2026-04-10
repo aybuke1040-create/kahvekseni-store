@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
+import { apiData } from '../lib/api-helpers';
 import { useAuthStore } from '../store/authStore';
 
 export default function Login() {
@@ -16,8 +17,10 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', form);
-      setAuth(data.data.user, data.data.accessToken, data.data.refreshToken);
+      const response = await api.post('/auth/login', form);
+      const auth = apiData<{ user?: Parameters<typeof setAuth>[0]; accessToken?: string; refreshToken?: string }>(response);
+      if (!auth?.user || !auth.accessToken || !auth.refreshToken) throw new Error('Invalid auth response');
+      setAuth(auth.user, auth.accessToken, auth.refreshToken);
       toast.success('Hoş geldiniz!');
       navigate('/');
     } catch {

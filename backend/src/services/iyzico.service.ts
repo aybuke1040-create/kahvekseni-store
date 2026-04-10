@@ -44,9 +44,10 @@ export interface CheckoutFormRequest {
 
 export const createCheckoutForm = (data: CheckoutFormRequest): Promise<Record<string, unknown>> => {
   return new Promise((resolve, reject) => {
+    const apiPublicUrl = (process.env.API_PUBLIC_URL || 'http://localhost:5000').replace(/\/+$/, '');
     const callbackUrl =
       process.env.PAYMENT_CALLBACK_URL ||
-      `${process.env.WEB_URL}/api/payment/callback`;
+      `${apiPublicUrl}/api/payment/callback`;
 
     const request = {
       locale: Iyzipay.LOCALE.TR,
